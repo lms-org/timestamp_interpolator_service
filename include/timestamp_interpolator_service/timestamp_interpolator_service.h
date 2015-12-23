@@ -50,7 +50,31 @@ public:
      */
     Timestamp interpolate(const Clock& from, const Clock& to, const Timestamp& timestamp) const;
 
-    // TODO: drift calculation
+    /**
+     * @brief Calculate clock drift of a time base w.r.t a reference clock
+     *
+     * @param reference The reference clock
+     * @param clock The other clock
+     * @return The drift value (0 = no drift, > 0 clock is faster than ref, < 0 clock is slower than ref)
+     */
+    template<typename T = double>
+    T drift(const Clock& reference, const Clock& clock) const
+    {
+        Timestamp refStart, refEnd, clockStart, clockEnd;
+        if(!getSyncPoints(reference, clock, refStart, clockStart, refEnd, clockEnd))
+        {
+            // No sync points found
+            return T(0);
+        }
+
+        auto clockDiff = clockEnd - clockStart;
+        auto refDiff = refEnd - refStart;
+
+        auto rate = clockDiff.toFloat<std::micro, T>() / refDiff.toFloat<std::micro, T>();
+
+        return ( rate - T(1) );
+    }
+
 protected:
 
     /**
