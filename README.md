@@ -1,6 +1,6 @@
 # Timestamp Interpolator Service
 
-This services interpolates between timestamps of different timebases (clocks).
+This [LMS service](https://github.com/lms-org/LMS/wiki/Service) interpolates between timestamps of different timebases (clocks).
 Clock synchronization is done by saving the timestamps of two clocks being synced at certain synchronization points.
 When converting from one time base to another, the time will be interpolated linearly between the first and the last saved synchronization points.
 
@@ -19,6 +19,8 @@ When converting from one time base to another, the time will be interpolated lin
 
 ### Get service handle
 ```cpp
+#include <timestamp_interpolator_service/timestamp_interpolator_service.h>
+// ...
 {
     auto service = getService<timestamp_interpolator_service::TimestampInterpolatorService>("TIMESTAMP_INTERPOLATOR");
     if(service.isValid())
@@ -35,7 +37,7 @@ When converting from one time base to another, the time will be interpolated lin
     service->sync("SYSTEM", "MY_CLOCK", lms::Time::now(), lms::Time::fromMicros(my_clock_timestamp));
 ```
 
-### Create new synchronization point
+### Calculate interpolated time in other timebase
 
 ```cpp
     // Compute current time in MY_CLOCK timebase
