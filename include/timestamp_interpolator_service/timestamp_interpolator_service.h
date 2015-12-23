@@ -70,6 +70,44 @@ protected:
             return std::make_pair(b, a);
         }
     }
+
+    /**
+     * @brief Get start and end synchronization points
+     * @return true on success, false if no sync points could be found
+     */
+    bool getSyncPoints(const Clock& a, const Clock& b,
+                       Timestamp& aStart, Timestamp& bStart,
+                       Timestamp& aEnd, Timestamp& bEnd) const
+    {
+        bool switched;
+        auto key = makeClockPair(a, b, switched);
+
+        const auto it = syncPoints.find(key);
+        if(it == syncPoints.end())
+        {
+            // No sync point found
+            return false;
+        }
+
+        const auto& vec = it->second;
+        if(vec.size() == 0)
+        {
+            // No sync points
+            return false;
+        }
+
+        std::tie(aStart, bStart) = vec.front();
+        std::tie(aEnd, bEnd) = vec.back();
+
+        if(switched)
+        {
+            // Swap from and to fields
+            std::swap(aStart, bStart);
+            std::swap(aEnd, bEnd);
+        }
+
+        return true;
+    }
 protected:
     //! Container to store synchronization points
     Container syncPoints;
