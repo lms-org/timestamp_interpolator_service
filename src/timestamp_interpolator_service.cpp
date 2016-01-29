@@ -42,18 +42,8 @@ TimestampInterpolatorService::Timestamp TimestampInterpolatorService::interpolat
     }
 
     // Compute interpolation
-    Timestamp::TimeType result;
-    if(lms::math::linearInterpolation<Timestamp::TimeType>(fromStart.micros(), toStart.micros(),
+    return lms::Time::fromMicros(lms::math::linearInterpolation<Timestamp::TimeType>(fromStart.micros(), toStart.micros(),
                                                            fromEnd.micros(), toEnd.micros(),
-                                                           timestamp.micros(), result))
-    {
-        return Timestamp::fromMicros(result);
-    }
-    else
-    {
-        // Start and End timestamp of source are identical -> no real interp possible
-        // => Just adjust clock offset
-        return toEnd + ( timestamp - fromEnd );
-    }
+                                                           timestamp.micros()));
 }
 } // namespace timestamp_interpolator_service
