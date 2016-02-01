@@ -61,16 +61,18 @@ TimestampInterpolatorService::Timestamp TimestampInterpolatorService::canonical(
         it = offsets.find(clock);
     } else {
         // Found offset
-
         if(timestamp < it->second.local/2) {
-            // Overflow occured
-            it->second.offset += (it->second.local - timestamp);
-        }
-        if(timestamp > it->second.local) {
+            // Overflow has occured
+            it->second.offset += (it->second.local - timestamp + lms::Time::fromMicros(1));
+            // Set new local/relative timestamp
+            it->second.local = timestamp;
+        } else if(timestamp > it->second.local) {
+            // Adjust highest local/relative timestamp yet observed
             it->second.local = timestamp;
         }
     }
 
+    // Return offset-adjusted timestamp
     return it->second.offset + timestamp;
 
 }
