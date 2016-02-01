@@ -1,6 +1,7 @@
 #include "timestamp_interpolator_service/timestamp_interpolator_service.h"
 
 #include <lms/math/interpolation.h>
+#include <timestamp_interpolator_service/timestamp_interpolator_service.h>
 
 namespace timestamp_interpolator_service {
 
@@ -45,5 +46,32 @@ TimestampInterpolatorService::Timestamp TimestampInterpolatorService::interpolat
     return lms::Time::fromMicros(lms::math::linearInterpolation<Timestamp::TimeType>(fromStart.micros(), toStart.micros(),
                                                            fromEnd.micros(), toEnd.micros(),
                                                            timestamp.micros()));
+}
+
+TimestampInterpolatorService::Timestamp TimestampInterpolatorService::canonical(
+        const TimestampInterpolatorService::Clock& clock, const TimestampInterpolatorService::Timestamp timestamp)
+{
+    auto it = offsets.find(clock);
+    if(it == offsets.end()) {
+        // No canonical offset information added yet
+        ClockOffset offset;
+        offset.offset = lms::Time::ZERO;
+        offset.local = timestamp;
+        offsets[clock] = offset;
+        it = offsets.find(clock);
+    } else {
+        // Found offset
+
+        if(timestamp < it->second.local/2) {
+            // Overflow occured
+            it->second.offset += (it->second.local - timestamp);
+        }
+        if(timestamp > it->second.local) {
+            it->second.local = timestamp;
+        }
+    }
+
+    return it->second.offset + timestamp;
+
 }
 } // namespace timestamp_interpolator_service

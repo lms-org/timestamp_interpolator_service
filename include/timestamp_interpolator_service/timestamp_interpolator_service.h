@@ -27,6 +27,13 @@ protected:
     typedef std::vector<TimestampPair> SyncPointList;
     typedef std::map<ClockPair, SyncPointList> Container;
 
+    typedef struct {
+        Timestamp offset;
+        Timestamp local;
+    } ClockOffset;
+
+    typedef std::map<Clock, ClockOffset> OffsetContaner;
+
 public:
     /**
      * @brief Create synchronization point for two clocks
@@ -74,6 +81,15 @@ public:
 
         return ( rate - T(1) );
     }
+
+    /**
+     * @brief Calculate canonical timestamp for a overflowing timebase clock
+     *
+     * @param clock The clock of the timebase
+     * @param timestamp The potentially overflowing timestamp from timebase
+     * @return The canonical overflow-compensated timestamp
+     */
+    Timestamp canonical(const Clock& clock, const Timestamp timestamp);
 
 protected:
 
@@ -135,6 +151,8 @@ protected:
 protected:
     //! Container to store synchronization points
     Container syncPoints;
+    //! Canonical timestamp offsets
+    OffsetContaner offsets;
 };
 
 } // namespace timestamp_interpolator_service

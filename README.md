@@ -30,6 +30,17 @@ When converting from one time base to another, the time will be interpolated lin
 }
 ```
 
+### Compute canonical timestamp
+
+Some timebases may have overflows in their representation, thus there might be the need to use canonical timestamps which are compensated for timebase overflows.
+
+
+```cpp
+    // Compute canonical timestamp from overflowing timestamp of SENSOR clock
+    auto canonical = service->canonical("SENSOR", timestamp);
+```
+
+
 ### Create new synchronization point
 
 ```cpp
