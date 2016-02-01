@@ -42,8 +42,11 @@ public:
      * @param bClock Identifier of the second clock
      * @param aTime Synchronization timestamp of the first clock
      * @param bTime Synchronization timestamp of the second clock
+     * @param makeCanonical Perform canonicalization on both timestamps
      */
-    void sync(const Clock& aClock, const Clock& bClock, const Timestamp& aTime, const Timestamp& bTime );
+    void sync(const Clock& aClock, const Clock& bClock,
+              Timestamp aTime, Timestamp bTime,
+              bool makeCanonical = true);
 
     /**
      * @brief Interpolate timestamp from one clock to another clock
@@ -53,9 +56,11 @@ public:
      * @param from The clock identifier to convert the timestmap from
      * @param to The clock identifier to convert the timestamp to
      * @param timestamp the clock identifier of the source clock to convert
+     * @param makeCanonical Perform canonicalization on both timestamps
      * @return Interpolated timestamp of the target clock
      */
-    Timestamp interpolate(const Clock& from, const Clock& to, const Timestamp& timestamp) const;
+    Timestamp interpolate(const Clock& from, const Clock& to,
+                          Timestamp timestamp, bool makeCanonical = true);
 
     /**
      * @brief Calculate clock drift of a time base w.r.t a reference clock

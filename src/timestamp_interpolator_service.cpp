@@ -12,11 +12,15 @@ bool TimestampInterpolatorService::init() {
 void TimestampInterpolatorService::destroy() {
 }
 
-void TimestampInterpolatorService::sync(const TimestampInterpolatorService::Clock &aClock,
-                                        const TimestampInterpolatorService::Clock &bClock,
-                                        const TimestampInterpolatorService::Timestamp &aTime,
-                                        const TimestampInterpolatorService::Timestamp &bTime)
+void TimestampInterpolatorService::sync(const Clock& aClock, const Clock& bClock,
+                                        Timestamp aTime, Timestamp bTime,
+                                        bool makeCanonical)
 {
+    if(makeCanonical) {
+        aTime = canonical(aClock, aTime);
+        bTime = canonical(bClock, bTime);
+    }
+
     bool switched;
     auto key = makeClockPair(aClock, bClock, switched);
     auto sync = switched ? std::make_pair(bTime, aTime) : std::make_pair(aTime, bTime);
@@ -33,9 +37,13 @@ void TimestampInterpolatorService::sync(const TimestampInterpolatorService::Cloc
 }
 
 TimestampInterpolatorService::Timestamp TimestampInterpolatorService::interpolate(
-        const TimestampInterpolatorService::Clock &from, const TimestampInterpolatorService::Clock &to,
-        const TimestampInterpolatorService::Timestamp &timestamp) const
+        const Clock& from, const Clock& to,
+        Timestamp timestamp, bool makeCanonical)
 {
+    if(makeCanonical) {
+        timestamp = canonical(from, timestamp);
+    }
+
     Timestamp fromStart, fromEnd, toStart, toEnd;
     if(!getSyncPoints(from, to, fromStart, toStart, fromEnd, toEnd))
     {
