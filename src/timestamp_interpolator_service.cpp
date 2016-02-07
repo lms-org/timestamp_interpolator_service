@@ -81,7 +81,7 @@ TimestampInterpolatorService::Timestamp TimestampInterpolatorService::canonical(
     }
 
     // Return offset-adjusted timestamp
-    return it->second.offset + timestamp;
+    return it->second.offset + it->second.local;
 
 }
 } // namespace timestamp_interpolator_service
